@@ -11,7 +11,7 @@
 int main(){
 
     OrderBook book;
-    uint64_t id = 0;
+    uint64_t id = 1;
     std::string input;
     while (true) {
         std::cout<<">";
@@ -23,24 +23,33 @@ int main(){
 
         ss >> command;
         Order myOrder;
-        myOrder.id = id++;
 
         switch (command) {
         case 'B':
             myOrder.type = BID;
-            ss >> input;
-            myOrder.amount = std::stoi(input);
-            ss >> input ;
-            myOrder.price = std::stoi(input);
-            book.process_order(myOrder);
+            try {
+                ss >> input;
+                myOrder.amount = std::stoi(input);
+                ss >> input ;
+                myOrder.price = std::stoi(input);
+                book.process_order(myOrder);
+                myOrder.id = id++;
+            } catch (...){
+                std::cout<<"Error Occured"<<std::endl;
+            }
             break;
         case 'A':
             myOrder.type = ASK;
-            ss >> input;
-            myOrder.amount = std::stoi(input);
-            ss >> input ;
-            myOrder.price = std::stoi(input);
-            book.process_order(myOrder);
+            try {
+                ss >> input;
+                myOrder.amount = std::stoi(input);
+                ss >> input ;
+                myOrder.price = std::stoi(input);
+                book.process_order(myOrder);
+                myOrder.id = id++;
+            } catch (...) { 
+                std::cout<<"Error Occured"<<std::endl;
+            }
             break;
         case 'Q':
             std::cout<<"Quitting..."<<std::endl;
