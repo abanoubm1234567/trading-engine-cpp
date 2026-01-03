@@ -11,7 +11,7 @@
 int main(){
 
     OrderBook book;
-    uint64_t id = 1;
+    std::uint64_t currentID = 0;
     std::string input;
     while (true) {
         std::cout<<">";
@@ -32,8 +32,8 @@ int main(){
                 myOrder.amount = std::stoi(input);
                 ss >> input ;
                 myOrder.price = std::stoi(input);
+                myOrder.id = ++currentID;
                 book.process_order(myOrder);
-                myOrder.id = id++;
             } catch (...){
                 std::cout<<"Error Occured"<<std::endl;
             }
@@ -45,8 +45,8 @@ int main(){
                 myOrder.amount = std::stoi(input);
                 ss >> input ;
                 myOrder.price = std::stoi(input);
+                myOrder.id = ++currentID;
                 book.process_order(myOrder);
-                myOrder.id = id++;
             } catch (...) { 
                 std::cout<<"Error Occured"<<std::endl;
             }
