@@ -11,7 +11,7 @@
 int main(){
 
     OrderBook book;
-    std::uint64_t currentID = 0;
+    uint64_t currentID{0};
     std::string input;
     while (true) {
         std::cout<<">";
