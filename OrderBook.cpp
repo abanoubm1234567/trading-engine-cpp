@@ -28,12 +28,17 @@ void OrderBook::print_book(){
       }
   }
   std::cout<<"=========================="<<std::endl;
+  for (const auto& item: trade_history){
+    std::cout<<item.tradeID<<": "<<"Bid #: "<<item.sellID<<" - Ask #: "<<item.askID<<" - Quantity: "<<item.amount<<" - Price: "<<item.price<<std::endl;
+  }
+  std::cout<<"=========================="<<std::endl;
 }
 
 void OrderBook::process_order(Order order){
     //check if there is a match, and then create a trade if there is
     if (order.type){ //is a BID
         if (!asks.empty() && asks.begin()->first <= order.price) { //match for a BID found
+            std::cout<<"Match found\n";
             Order matchingOrder = asks.begin()->second.front();
             //three scenarios can occur here: there are equal quantities in the bid and ask orders, or bid has higher or ask has higher
             if (order.amount < matchingOrder.amount){ //the amount from the incoming order is less than currently in book
@@ -44,17 +49,39 @@ void OrderBook::process_order(Order order){
             else if (order.amount > matchingOrder.amount) { //amount in book is less than the incoming order
               OrderBook::create_trade(order.id, matchingOrder.id, matchingOrder.amount, matchingOrder.price);
               order.amount = order.amount - matchingOrder.amount;
-
+              asks[order.price].pop_front();
             }
             else {
-            
+              OrderBook::create_trade(order.id, matchingOrder.id, matchingOrder.amount, matchingOrder.price);
+              asks[order.price].pop_front();
+              return; 
             }
         }
     }
     else { //is an ASK
-    
+        if (!bids.empty() && bids.begin()->first >= order.price) { //match for an ASK found
+            std::cout<<"Match found\n";
+            Order matchingOrder = bids.begin()->second.front();
+            //three scenarios can occur here: there are equal quantities in the bid and ask orders, or bid has higher or ask has higher
+            if (order.amount < matchingOrder.amount){ //the amount from the incoming order is less than currently in book
+              OrderBook::create_trade(matchingOrder.id, order.id, order.amount, matchingOrder.price);
+              matchingOrder.amount = matchingOrder.amount - order.amount;
+              return;
+            }
+            else if (order.amount > matchingOrder.amount) { //amount in book is less than the incoming order
+              OrderBook::create_trade(matchingOrder.id, order.id, matchingOrder.amount, matchingOrder.price);
+              order.amount = order.amount - matchingOrder.amount;
+              bids[order.price].pop_front();
+            }
+            else {
+              OrderBook::create_trade(matchingOrder.id, order.id, matchingOrder.amount, matchingOrder.price);
+              bids[order.price].pop_front();
+              return; 
+            }
+        }
     }
     //no match, order is placed into the order book to be matched at a later time
+    std::cout<<"No match found\n";
     if (order.type){ //is a BID
         bids[order.price].push_back(order);
     }
